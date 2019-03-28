@@ -7,5 +7,6 @@ namespace Multas.Models
 {
     public class Condutores
     {
+        public int Id { get; set; }
     }
 }
