@@ -31,7 +31,7 @@ namespace Multas.Models
         public Condutores Condutor { get; set; }
 
         //FK para a Viatura
-        [ForeignKey("Agente")]   //palavra reservada, tem de se por a biblioteca using....
+        [ForeignKey("Viatura")]   //palavra reservada, tem de se por a biblioteca using....
         public int ViaturaFK { get; set; }
         public Viaturas Viatura { get; set; }
 
