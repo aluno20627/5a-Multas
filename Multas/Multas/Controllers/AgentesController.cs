@@ -16,6 +16,7 @@ namespace Multas.Controllers
         private MultasDB db = new MultasDB();
 
         // GET: Agentes
+        
         public ActionResult Index()
         {
             //procura a totalidade dos Agentes na BD
@@ -26,17 +27,31 @@ namespace Multas.Controllers
         }
 
         // GET: Agentes/Details/5
+        /// <summary>
+        /// Mostra os dados de um agente
+        /// </summary>
+        /// <param name="id">identifica o Agente</param>
+        /// <returns>devolve a View com os dados</returns>
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //Vamos alterar esta resposta por defeito
+                // return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //
+                //este erro ocorre porque o utilizador anda a fazer asneiras
+                return RedirectToAction("Index");
             }
             //SELECT * FROM Agentes WHERE Id=id
             Agentes agentes = db.Agentes.Find(id);
+
+
+            //o agente foi encontrado?
             if (agentes == null)
             {
-                return HttpNotFound();
+                //o Agente não foi encontrado, porque o utilizador está 'à pesca'
+                //return HttpNotFound();
+                return RedirectToAction("Index");
             }
             return View(agentes);
         }
@@ -67,14 +82,25 @@ namespace Multas.Controllers
         // GET: Agentes/Edit/5
         public ActionResult Edit(int? id)
         {
+
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //Vamos alterar esta resposta por defeito
+                // return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //
+                //este erro ocorre porque o utilizador anda a fazer asneiras
+                return RedirectToAction("Index");
             }
+            //SELECT * FROM Agentes WHERE Id=id
             Agentes agentes = db.Agentes.Find(id);
+
+
+            //o agente foi encontrado?
             if (agentes == null)
             {
-                return HttpNotFound();
+                //o Agente não foi encontrado, porque o utilizador está 'à pesca'
+                //return HttpNotFound();
+                return RedirectToAction("Index");
             }
             return View(agentes);
         }
@@ -98,26 +124,89 @@ namespace Multas.Controllers
         // GET: Agentes/Delete/5
         public ActionResult Delete(int? id)
         {
+
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //Vamos alterar esta resposta por defeito
+                // return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //
+                //este erro ocorre porque o utilizador anda a fazer asneiras
+                return RedirectToAction("Index");
             }
+            //SELECT * FROM Agentes WHERE Id=id
             Agentes agentes = db.Agentes.Find(id);
+
+
+            //o agente foi encontrado?
             if (agentes == null)
             {
-                return HttpNotFound();
+                //o Agente não foi encontrado, porque o utilizador está 'à pesca'
+                //return HttpNotFound();
+                return RedirectToAction("Index");
             }
+
+            //o Agente foi encontrado
+            // vou salvaguardar os dados para a posterior validação
+            // - guardar o ID do Agente num cookie cifrado
+            // - guardar o ID numa variável de sessão (se se usar o ASP .NET Core, esta ferramenta já não existe...
+            // - outras alternativas válidas...
+
+            Session["Agente"] = agentes.ID;
+
+            //mostra na View os dados do Agente
             return View(agentes);
         }
 
         // POST: Agentes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int? id)
         {
-            Agentes agentes = db.Agentes.Find(id);
-            db.Agentes.Remove(agentes);
-            db.SaveChanges();
+            if (id == null)
+            {
+                //há um 'xico esperto' a tentar dar-me a volta ao código
+                return RedirectToAction("Index");
+            }
+
+            //o ID não é null
+            // será o ID que eu espero?
+            // vamos validar se o ID está correto
+            if (id != (int)Session["Agente"])
+            {
+                //há aqui outro 'xico esperto'...
+                return RedirectToAction("Index");
+            }
+            
+                //procura o Agente a remover
+                Agentes agentes = db.Agentes.Find(id);
+
+            if (agentes == null)
+            {
+                //não foi encontrado o Agente
+                return RedirectToAction("Index");
+            }
+
+            try
+            {   
+                //dá ordem de remoção do Agente
+                db.Agentes.Remove(agentes);
+
+                //consolida remoção
+                db.SaveChanges();
+            }
+
+            catch (Exception)
+            {
+                //devem aqui ser escritas todas as instruções que são consideradas necessárias
+
+                //informar que houve um erro
+                ModelState.AddModelError("", "Não é possível remover o Agente. " + agentes.Nome +
+                    "Provavelmente, tem multas associadas a ele...");
+                //redirecionar para a página onde o erro foi gerado
+                return View(agentes);
+
+            }
+            
             return RedirectToAction("Index");
         }
 
