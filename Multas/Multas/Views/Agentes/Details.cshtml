@@ -1,13 +1,12 @@
 ﻿@model Multas.Models.Agentes
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Detalhes";
 }
 
-<h2>Details</h2>
+<h2>Detalhes do Agente <i>@Model.Nome</i></h2>
 
 <div>
-    <h4>Agentes</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -31,11 +30,67 @@
         </dt>
 
         <dd>
-            @*@Html.DisplayFor(model => model.Fotografia)*@
             <img src="~/imagens/@Model.Fotografia" height="150" />
+            @*@Html.DisplayFor(model => model.Fotografia)*@
         </dd>
-
     </dl>
+    @*Mostrar aqui os dados das multas emitidas pelo Agente*@
+    <hr />
+    <h4>Lista das Multas</h4>
+    <table class="table" >
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ListaMultas.FirstOrDefault().ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ListaMultas.FirstOrDefault().DataDaMulta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ListaMultas.FirstOrDefault().ValorMulta)
+            </th>
+            <th>
+                Condutor
+            </th>
+            <th>
+                Viatura
+            </th>
+        </tr>
+        @*listar as multas de um agente*@
+        @foreach(var multa in Model.ListaMultas)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => multa.ID)
+            </td>
+            <td>
+                @multa.DataDaMulta
+            </td>
+            <td>
+                @multa.LocalDaMulta
+            </td>
+            <td>
+                @*link para Condutor*@
+                <a href="/condutores/details/@multa.Condutor.ID">@multa.Condutor.Nome</a>
+            </td>
+            <td>
+                @*link para Viatura*@
+                @Html.ActionLink(multa.Viatura.Matricula,
+               "Details",
+               "Viaturas",
+               new { id=multa.Viatura.ID},
+               null)
+            </td>
+
+        </tr>
+        }
+
+
+    </table>
+
+
+
+    <hr />
+
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
