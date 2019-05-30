@@ -123,7 +123,7 @@ namespace Multas.Controllers
                     //consolida os dados na BD
                     db.SaveChanges();
                     //consolida os dados na BD
-                    fotografia.SaveChanges(caminho);
+                    fotografia.SaveAs(caminho);
                     //redireciona o utilizador para a página do INDEX
                     return RedirectToAction("Index");
                 }
