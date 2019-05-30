@@ -14,7 +14,7 @@ namespace Multas.Controllers
     public class AgentesController : Controller
     {
         //cria uma variável que representa a BD
-        private MultasDB db = new MultasDB();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Agentes
         
@@ -87,7 +87,7 @@ namespace Multas.Controllers
 
             //var aux
             string caminho = "";
-            bool haFicheiro;
+            bool haFoto = false;
 
             //há ficheiro?
             if (fotografia==null)
@@ -99,36 +99,43 @@ namespace Multas.Controllers
             {
                 //há ficheiro
                 //será correto?
-                if (fotografia.ContentType=="image/jpeg" || fotografia.ContentType=="image.png")
+                if (fotografia.ContentType == "image/jpeg" ||
+               fotografia.ContentType == "image/png")
                 {
-                    //estamos perante uma foto correta
+                    // estamos perante uma foto correta
                     string extensao = Path.GetExtension(fotografia.FileName).ToLower();
                     Guid g;
                     g = Guid.NewGuid();
-                    //nome do ficheiro
-                    string nome = g.ToString()+extensao;
-                    //onde guardar o ficheiro
-                    string caminho = Path.Combine(Server.MapPath("~/imagens"), nome);
-                    //atribuir ao agente o nome do ficheiro
+                    // nome do ficheiro
+                    string nome = g.ToString() + extensao;
+                    // onde guardar o ficheiro
+                    caminho = Path.Combine(Server.MapPath("~/imagens"), nome);
+                    // atribuir ao agente o nome do ficheiro
                     agente.Fotografia = nome;
+                    // assinalar q há foto
+                    haFoto = true;
                 }
             }
 
-            if (ModelState.IsValid) //valida se os dados fornecidos estão de acordo com as regras definidas no Modelo
+            if (ModelState.IsValid)
             {
+                // valida se os dados fornecidos estão de acordo 
+                // com as regras definidas na especificação do Modelo
                 try
                 {
-                    //adiciona o novo Agente ao Modelo
+                    // adiciona o novo Agente ao Modelo
                     db.Agentes.Add(agente);
-                    //consolida os dados na BD
+                    // consolida os dados na BD
                     db.SaveChanges();
-                    //consolida os dados na BD
-                    fotografia.SaveAs(caminho);
-                    //redireciona o utilizador para a página do INDEX
+                    // vou guardar o ficheiro no disco rígido
+                    if (haFoto) fotografia.SaveAs(caminho);
+                    // redireciona o utilizador para a página do INDEX
                     return RedirectToAction("Index");
                 }
-                catch (Exception) {
-                    ModelState.AddModelError("", "Ocorreu um erro com a escrita dos dados do novo Agente");
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "Ocorreu um erro com a escrita " +
+                                             "dos dados do novo Agente");
                 }
 
             }
