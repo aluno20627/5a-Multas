@@ -11,13 +11,16 @@ using Multas.Models;
 
 namespace Multas.Controllers
 {
+    [Authorize(Roles ="")] // só pessoas autenticadas podem executar estas tarefas
     public class AgentesController : Controller
     {
         //cria uma variável que representa a BD
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Agentes
-        
+
+        // a notação seguinte obriga a pelo menos um dos Roles
+        [Authorize(Roles ="RecursosHumanos,Agente")] //só os agentes e as pessoas dos Recursos Humans acedem a esta listagem
         public ActionResult Index()
         {
             //procura a totalidade dos Agentes na BD

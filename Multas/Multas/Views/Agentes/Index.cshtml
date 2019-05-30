@@ -6,6 +6,7 @@
 
 <h2>Listagem de Agentes</h2>
 
+@if(User.IsInRole"")
 <p>
     @Html.ActionLink("Criar Agente", "Create")
 </p>
