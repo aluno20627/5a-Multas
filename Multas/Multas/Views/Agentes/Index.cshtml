@@ -5,11 +5,12 @@
 }
 
 <h2>Listagem de Agentes</h2>
-
-@if(User.IsInRole"")
-<p>
-    @Html.ActionLink("Criar Agente", "Create")
-</p>
+@if (User.IsInRole("RecursosHumanos"))
+{
+    <p>
+        @Html.ActionLink("Criar novo agente", "Create")
+    </p>
+}
 <table class="table">
     <tr>
         <th>
@@ -24,31 +25,38 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Nome)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Esquadra)
-        </td>
-        <td>
-            @*
-                mostra o conteúdo do campo Fotografia
-            @Html.DisplayFor(modelItem => item.Fotografia)*@
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Esquadra)
+            </td>
+            <td>
+                @*
+                    mostra o conteúdo do campo Fotografia
+                    @Html.DisplayFor(modelItem => item.Fotografia)*@
 
-            @* quero mostrar a imagem do Agente *@
-            <img src="~/imagens/@item.Fotografia" height="50" />
+                @* quero mostrar a imagem do Agente *@
+                <img src="~/imagens/@item.Fotografia" height="50" />
+            </td>
+            <td>
 
+                @Html.ActionLink("Detalhes", "Details", new { id = item.ID })
+                @if (User.IsInRole("RecursosHumanos"))
+                {
+                    <text>
+                        |
+                        @Html.ActionLink("Editar", "Edit", new { id = item.ID })
+                        |
+                        @Html.ActionLink("Apagar", "Delete", new { id = item.ID })
+                    </text>
+                }
 
-
-        </td>
-        <td>
-            @Html.ActionLink("Editar", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Detalhes", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Apagar", "Delete", new { id=item.ID })
-        </td>
-    </tr>
-}
+            </td>
+        </tr>
+    }
 
 </table>
